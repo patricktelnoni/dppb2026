@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'provinsi.dart';
+import 'model/provinsi.dart';
 import 'package:kuliahdppb/service/provinsi-service.dart';
 
 void main() {
@@ -43,53 +43,39 @@ class _CounterPageState extends State<CounterPage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child:FutureBuilder<List<Provinsi>>(
-          future: fetchPosts(), // a previously-obtained Future<String> or null
-          builder: (BuildContext context, AsyncSnapshot<List<Provinsi>> snapshot) {
-            List<Widget> children;
-            if (snapshot.hasData) {
-              daftarProvinsi = snapshot.data!;
-              return ListView.builder(
-                itemCount: daftarProvinsi.length,
-                itemBuilder: (BuildContext context, int index){
-                  return Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.list),
-                          title: Text(daftarProvinsi[index].nama.toString()),
-                          trailing: Icon(Icons.arrow_forward),
-                        )
-                      ],
-                    ),
+        child: FutureBuilder(
+            future: ambilDataProvinsi(),
+            builder: (BuildContext context, AsyncSnapshot<List<Provinsi>> snapshot){
+              if(snapshot.hasData){
+                daftarProvinsi = snapshot.data!;
+                return ListView.builder(
+                    itemCount: daftarProvinsi.length,
+                    itemBuilder: (BuildContext context, int index){
+                      return Card(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(daftarProvinsi[index].nama.toString()),
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                );
+              }
+              else if (snapshot.hasError) {
+                  return Padding(
+                    padding: const .only(top: 16),
+                    child: Text('Error: ${snapshot.error}'),
                   );
-                },
-              );
-            } else if (snapshot.hasError) {
-              children = <Widget>[
-                const Icon(Icons.error_outline, color: Colors.red, size: 60),
-                Padding(
-                  padding: const .only(top: 16),
-                  child: Text('Error: ${snapshot.error}'),
-                ),
-              ];
-            } else {
-              children = const <Widget>[
-                SizedBox.square(
-                  dimension: 60,
-                  child: CircularProgressIndicator(),
-                ),
-                Padding(
+              }
+              else{
+                return Padding(
                   padding: .only(top: 16),
                   child: Text('Awaiting result...'),
-                ),
-              ];
+                );
+              }
             }
-            return Center(
-              child: Column(mainAxisAlignment: .center, children: children),
-            );
-          },
         ),
       ),
 
