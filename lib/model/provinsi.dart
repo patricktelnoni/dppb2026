@@ -11,4 +11,6 @@ class Provinsi {
         id: json['id'] as int,
         nama: json['nama'] as String);
   }
+
+  // will be added toJson() method
 }
